@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { CategoryModule } from './categories/category.module';
 import { Category } from './categories/category.entity';
+import { Publication } from './publications/publication.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,7 +23,7 @@ import { Category } from './categories/category.entity';
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
-        entities: [Category],
+        entities: [Category, Publication],
         migrations: ['dist/migrations/*.js'],
         migrationsRun: true,
       }),
