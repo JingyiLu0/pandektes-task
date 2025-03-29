@@ -3,7 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-
+import { CategoryModule } from './categories/category.module';
+import { Category } from './categories/category.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -20,9 +21,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false,
+        entities: [Category],
+        migrations: ['dist/migrations/*.js'],
+        migrationsRun: true,
       }),
     }),
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
