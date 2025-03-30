@@ -1,7 +1,7 @@
 import { Controller, Post } from '@nestjs/common';
 import { PublicationCategoryService } from './publication-category.service';
 
-@Controller('publication-category')
+@Controller('publication')
 export class PublicationCategoryController {
   constructor(
     private readonly publicationCategoryService: PublicationCategoryService,
