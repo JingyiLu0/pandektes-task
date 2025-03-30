@@ -19,39 +19,40 @@ interface ResponseSchema {
   [key: string]: unknown;
 }
 
-const options = {
-  method: 'POST',
-  url: 'https://mfkn.naevneneshus.dk/api/search',
-  headers: {
-    Accept: 'application/json, text/plain, */*',
-    'Accept-Language': 'en-GB,en;q=0.6',
-    'Cache-Control': 'no-cache',
-    Connection: 'keep-alive',
-    'Content-Type': 'application/json',
-    Origin: 'https://mfkn.naevneneshus.dk',
-    Pragma: 'no-cache',
-    Referer:
-      'https://mfkn.naevneneshus.dk/soeg?sort=desc&s=&categories=&types=ruling',
-    'Sec-Fetch-Dest': 'empty',
-    'Sec-Fetch-Mode': 'cors',
-    'Sec-Fetch-Site': 'same-origin',
-    'Sec-GPC': '1',
-    'User-Agent':
-      'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
-    'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Brave";v="134"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"macOS"',
-  },
-  data: {
-    categories: [],
-    query: '',
-    sort: 'Descending',
-    types: ['ruling'],
-    skip: 0,
-    size: 100,
-  },
-};
-
+function getRequestOption(skip: number = 0, size: number = 100) {
+  return {
+    method: 'POST',
+    url: 'https://mfkn.naevneneshus.dk/api/search',
+    headers: {
+      Accept: 'application/json, text/plain, */*',
+      'Accept-Language': 'en-GB,en;q=0.6',
+      'Cache-Control': 'no-cache',
+      Connection: 'keep-alive',
+      'Content-Type': 'application/json',
+      Origin: 'https://mfkn.naevneneshus.dk',
+      Pragma: 'no-cache',
+      Referer:
+        'https://mfkn.naevneneshus.dk/soeg?sort=desc&s=&categories=&types=ruling',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-origin',
+      'Sec-GPC': '1',
+      'User-Agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36',
+      'sec-ch-ua': '"Chromium";v="134", "Not:A-Brand";v="24", "Brave";v="134"',
+      'sec-ch-ua-mobile': '?0',
+      'sec-ch-ua-platform': '"macOS"',
+    },
+    data: {
+      categories: [],
+      query: '',
+      sort: 'Descending',
+      types: ['ruling'],
+      skip,
+      size,
+    },
+  };
+}
 @Injectable()
 export class PublicationCategoryService {
   constructor(
@@ -107,9 +108,12 @@ export class PublicationCategoryService {
     }
   }
 
-  async populateDatabaseFromExternalApi(): Promise<void> {
+  async populateDatabaseFromExternalApi(
+    skip: number,
+    size: number,
+  ): Promise<void> {
     await axios
-      .request<ResponseSchema>(options)
+      .request<ResponseSchema>(getRequestOption(skip, size))
       .then(async (response) => {
         const categories: ExternalCategory[] = response.data.categoryCounts;
         await this.categoryService.bulkCreateOrUpdate(categories);

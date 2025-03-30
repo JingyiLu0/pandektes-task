@@ -1,4 +1,4 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Query } from '@nestjs/common';
 import { PublicationCategoryService } from './publication-category.service';
 
 @Controller('publication')
@@ -8,9 +8,15 @@ export class PublicationCategoryController {
   ) {}
 
   @Post('populate')
-  async populateCategories(): Promise<string> {
+  async populateCategories(
+    @Query('skip') skip: number,
+    @Query('size') size: number,
+  ): Promise<string> {
     try {
-      await this.publicationCategoryService.populateDatabaseFromExternalApi();
+      await this.publicationCategoryService.populateDatabaseFromExternalApi(
+        skip,
+        size,
+      );
       return 'Data populated successfully!';
     } catch (error) {
       return `Failed to populate data: ${error}`;
