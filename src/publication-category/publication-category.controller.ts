@@ -1,4 +1,11 @@
-import { Controller, Post, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  NotFoundException,
+} from '@nestjs/common';
 import { PublicationCategoryService } from './publication-category.service';
 
 @Controller('publication')
@@ -21,5 +28,16 @@ export class PublicationCategoryController {
     } catch (error) {
       return `Failed to populate data: ${error}`;
     }
+  }
+
+  @Get(':id')
+  async getPublicationWithCategories(@Param('id') id: string) {
+    const result = await this.publicationCategoryService
+      .getPublicationAndCategoryByPublicationId(id)
+      .catch((err) => {
+        return new NotFoundException(err);
+      });
+
+    return result;
   }
 }

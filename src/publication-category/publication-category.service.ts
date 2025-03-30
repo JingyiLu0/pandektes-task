@@ -127,4 +127,22 @@ export class PublicationCategoryService {
         throw new Error('Failed to populate categories');
       });
   }
+
+  async getPublicationAndCategoryByPublicationId(publicationId: string) {
+    const publication = await this.publicationService.getById(publicationId);
+    if (!publication) {
+      throw new Error(`Publication with ID ${publicationId} not found`);
+    }
+    const categories = await this.publicationCategoryRepository.find({
+      where: { publication: publication },
+      relations: ['category'],
+    });
+
+    return {
+      ...publication,
+      categories: categories.length
+        ? categories.map((pc) => pc.category.name)
+        : [],
+    };
+  }
 }
