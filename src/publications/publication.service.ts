@@ -1,3 +1,4 @@
+import * as sanitizeHtml from 'sanitize-html';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -61,11 +62,10 @@ export class PublicationService {
         publication = new Publication();
         publication.id = externalPub.id;
       }
-
       publication.title = externalPub.title;
       publication.type = externalPub.type;
       publication.abstract = externalPub.abstract;
-      publication.body = externalPub.body;
+      publication.body = sanitizeHtml(externalPub.body);
       publication.published_date = new Date(externalPub.published_date);
       publication.date = new Date(externalPub.date);
       publication.is_board_ruling = externalPub.is_board_ruling;
