@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Category } from './category.entity';
 import axios from 'axios';
 interface ExternalCategory {
@@ -58,8 +58,32 @@ export class CategoryService {
     return this.categoryRepository.save(category);
   }
 
-  async findAll(): Promise<Category[]> {
-    return this.categoryRepository.find();
+  async bulkCreateOrUpdate(
+    externalCategories: ExternalCategory[],
+  ): Promise<Category[]> {
+    const categoriesToSave: Category[] = [];
+
+    for (const extCat of externalCategories) {
+      let category = await this.categoryRepository.findOne({
+        where: { name: extCat.category },
+      });
+
+      if (category) {
+        category.name = extCat.category;
+      } else {
+        category = new Category();
+        category.name = extCat.category;
+      }
+
+      categoriesToSave.push(category);
+    }
+    return this.categoryRepository.save(categoriesToSave);
+  }
+
+  async getByNames(names: string[]): Promise<Category[] | null> {
+    return this.categoryRepository.find({
+      where: { name: In(names) },
+    });
   }
 
   async populateCategoriesFromExternalApi(): Promise<void> {

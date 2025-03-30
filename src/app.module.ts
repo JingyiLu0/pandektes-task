@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CategoryModule } from './categories/category.module';
+import { PublicationCategoryModule } from './publication-category/publication-category.module';
 import { Category } from './categories/category.entity';
 import { Publication } from './publications/publication.entity';
+import { PublicationCategory } from './publication-category/publication-category.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,12 +24,12 @@ import { Publication } from './publications/publication.entity';
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
         synchronize: false,
-        entities: [Category, Publication],
+        entities: [Category, Publication, PublicationCategory],
         migrations: ['dist/migrations/*.js'],
         migrationsRun: true,
       }),
     }),
-    CategoryModule,
+    PublicationCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
